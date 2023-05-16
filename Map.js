@@ -1,5 +1,12 @@
+function sleep(millisecondsDuration) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, millisecondsDuration);
+  });
+}
+
 class Map {
-  constructor(x, y, cellsize) {
+  constructor(x, y, cellsize, startX, startY) {
+    this.cellsStack = [];
     this.cells = [];
     for (let i = 0; i < x; i++) {
       this.cells[i] = [];
@@ -7,9 +14,22 @@ class Map {
         this.cells[i][j] = new Cell(i, j, cellsize, this);
       }
     }
+    this.cellsStack.push(this.cells[startX][startY]);
   }
 
-  drawCells() {
+  MoveCell() {
+    if (this.cellsStack.length > 0) {
+      let current = this.cellsStack[this.cellsStack.length - 1];
+      console.log(current);
+      let moved = current.MoveFuther();
+      if (!moved) {
+        this.cellsStack.pop();
+      }
+    }
+  }
+
+  Draw() {
+    clear();
     for (let i = 0; i < this.cells.length; i++) {
       for (let j = 0; j < this.cells[i].length; j++) {
         this.cells[i][j].drawCell();
@@ -28,6 +48,37 @@ class Cell {
     this.mapref = mapref;
     for (let i = 0; i < 4; i++) {
       this.walls[i] = true;
+    }
+  }
+  MoveFuther() {
+    this.visited = true;
+    console.log("Moved");
+    let next = this.getRandomNeighbor();
+
+    if (next != null) {
+      this.removeWalls(next);
+      this.mapref.cellsStack.push(this.mapref.cells[next[0]][next[1]]);
+      return true;
+    } else {
+      return false;
+    }
+  }
+  removeWalls(next) {
+    if (next[0] == this.x + 1) {
+      this.walls[1] = false;
+      this.mapref.cells[next[0]][next[1]].walls[3] = false;
+    }
+    if (next[0] == this.x - 1) {
+      this.walls[3] = false;
+      this.mapref.cells[next[0]][next[1]].walls[1] = false;
+    }
+    if (next[1] == this.y + 1) {
+      this.walls[2] = false;
+      this.mapref.cells[next[0]][next[1]].walls[0] = false;
+    }
+    if (next[1] == this.y - 1) {
+      this.walls[0] = false;
+      this.mapref.cells[next[0]][next[1]].walls[2] = false;
     }
   }
   getRandomNeighbor() {
