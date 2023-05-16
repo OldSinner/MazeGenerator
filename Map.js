@@ -54,7 +54,15 @@ class Cell {
     this.visited = true;
     console.log("Moved");
     let next = this.getRandomNeighbor();
-
+    fill(255, 0, 0);
+    strokeWeight(0);
+    rect(
+      this.x * this.cellsize,
+      this.y * this.cellsize,
+      this.cellsize,
+      this.cellsize
+    );
+    strokeWeight(1);
     if (next != null) {
       this.removeWalls(next);
       this.mapref.cellsStack.push(this.mapref.cells[next[0]][next[1]]);
@@ -113,12 +121,14 @@ class Cell {
     } else {
       fill(0, 0, 255);
     }
+    strokeWeight(0);
     rect(
       this.x * this.cellsize,
       this.y * this.cellsize,
       this.cellsize,
       this.cellsize
     );
+    strokeWeight(1);
     if (this.walls[0]) {
       line(
         this.x * this.cellsize,
